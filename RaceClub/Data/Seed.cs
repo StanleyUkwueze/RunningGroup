@@ -106,6 +106,40 @@ namespace RaceClub.Data
                             }
                         }
                     });
+                  
+
+                    context.SaveChanges();
+                }
+
+                //Addresses
+                if (!context.Addresses.Any())
+                {
+                    context.Addresses.AddRange(new List<Address>()
+                    {
+                       new Address()
+                        {
+                            Street = "123 Main St",
+                            City = "Charlotte",
+                            State = "NC"
+                        },
+                        new Address()
+                        {
+                            Street = "123 Main St",
+                            City = "Charlotte",
+                            State = "NC"
+                        }, new Address()
+                        {
+                            Street = "123 Main St",
+                            City = "Charlotte",
+                            State = "NC"
+                        }, new Address()
+                        {
+                            Street = "123 Main St",
+                            City = "Charlotte",
+                            State = "NC"
+                        }
+                    });
+
                     context.SaveChanges();
                 }
             }

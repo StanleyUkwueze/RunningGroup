@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using RaceClub.Data;
+using RaceClub.Helper;
+using RaceClub.Repository.Implementation;
+using RaceClub.Repository.Interfaces;
+using RaceClub.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -9,6 +13,10 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<IClubRepo, ClubRepo>();
+builder.Services.AddScoped<IRaceRepo, RaceRepo>();
+builder.Services.AddScoped<IPhotoService, PhotoService>();
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
 
 var app = builder.Build();
 
