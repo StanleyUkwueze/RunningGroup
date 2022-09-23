@@ -36,6 +36,11 @@ namespace RaceClub.Repository.Implementation
             return await _context.Clubs.Include(c => c.Address).FirstOrDefaultAsync(c => c.Id == id);
         }
 
+        public async Task<Club> GetByIdAsyncNoTracking(int id)
+        {
+            return await _context.Clubs.Include(c => c.Address).AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+        }
+
         public async Task<IEnumerable<Club>> GetClubByCity(string city)
         {
             var response = await _context.Clubs.Where(c => c.Address.City.Contains(city)).ToListAsync();

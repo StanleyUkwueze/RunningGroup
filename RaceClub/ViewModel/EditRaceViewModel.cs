@@ -3,7 +3,7 @@ using RaceClub.Models;
 
 namespace RaceClub.ViewModel
 {
-    public class EditClubViewModel
+    public class EditRaceViewModel
     {
         public int Id { get; set; }
         public string? Title { get; set; }
@@ -12,6 +12,6 @@ namespace RaceClub.ViewModel
         public int? AddressId { get; set; }
         public IFormFile Image { get; set; }
         public Address? Address { get; set; }
-        public ClubCategory ClubCategory { get; set; }
+        public RaceCategory RaceCategory { get; set; }
     }
 }

@@ -10,13 +10,13 @@ namespace RaceClub.Controllers
 {
     public class ClubController : Controller
     {
-       
+
         private readonly IClubRepo _clubRepo;
         private readonly IPhotoService _photoService;
 
         public ClubController(IClubRepo clubRepo, IPhotoService photoService)
         {
-            
+
             _clubRepo = clubRepo;
             _photoService = photoService;
         }
@@ -40,7 +40,7 @@ namespace RaceClub.Controllers
 
         public async Task<IActionResult> Create()
         {
-           
+
             return View();
         }
 
@@ -53,15 +53,15 @@ namespace RaceClub.Controllers
 
                 var club = new Club
                 {
-                  Title = clubVM.Title,
-                  Image = result.Url.ToString(),
-                  Description = clubVM.Description,
-                  Address = new Address
-                  {
-                      Street = clubVM.Address.Street,
-                      State = clubVM.Address.State,
-                      City = clubVM.Address.City
-                  }
+                    Title = clubVM.Title,
+                    Image = result.Url.ToString(),
+                    Description = clubVM.Description,
+                    Address = new Address
+                    {
+                        Street = clubVM.Address.Street,
+                        State = clubVM.Address.State,
+                        City = clubVM.Address.City
+                    }
 
                 };
                 _clubRepo.Add(club);
@@ -75,10 +75,11 @@ namespace RaceClub.Controllers
             return View(clubVM);
         }
 
+
         public async Task<IActionResult> Edit(int id)
         {
             var clubToEdit = await _clubRepo.GetByIdAsync(id);
-            if(clubToEdit == null) 
+            if (clubToEdit == null)
                 return View("Error");
 
             var clubVm = new EditClubViewModel
@@ -92,6 +93,53 @@ namespace RaceClub.Controllers
             };
 
             return View(clubVm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, EditClubViewModel clubVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Failed to edit club");
+                return View("Error");
+            }
+
+            var userClub = await _clubRepo.GetByIdAsyncNoTracking(id);
+
+            if (userClub != null)
+            {
+                try
+                {
+                    await _photoService.DeletePhotoAsync(userClub.Image);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"{ex.Message}");
+                    return View(clubVM);
+                }
+                var photo = await _photoService.AddPhotoAsync(clubVM.Image);
+
+
+
+                var club = new Club
+                {
+                    Id = clubVM.Id,
+                    Title = clubVM.Title,                 
+                    Address = clubVM.Address,
+                    AddressId = clubVM.AddressId,
+                    ClubCategory = clubVM.ClubCategory,
+                    Image = photo.Url.ToString(),
+                    Description = clubVM.Description
+                };
+
+                _clubRepo.Update(club);
+
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(clubVM);
+            }
         }
     }
 }

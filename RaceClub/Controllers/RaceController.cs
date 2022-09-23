@@ -67,5 +67,71 @@ namespace RaceClub.Controllers
             return View(raceVM);
           
         }
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            var clubToEdit = await _raceRepo.GetByIdAsync(id);
+            if (clubToEdit == null)
+                return View("Error");
+
+            var clubVm = new EditRaceViewModel
+            {
+                Title = clubToEdit.Title,
+                Description = clubToEdit.Description,
+                Address = clubToEdit.Address,
+                AddressId = clubToEdit.AddressId,
+                Url = clubToEdit.Image,
+                RaceCategory = clubToEdit.RaceCategory,
+            };
+
+            return View(clubVm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, EditRaceViewModel raceVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Failed to edit club");
+                return View("Error");
+            }
+
+            var userClub = await _raceRepo.GetByIdAsyncNoTracking(id);
+
+            if (userClub != null)
+            {
+                try
+                {
+                    await _photoService.DeletePhotoAsync(userClub.Image);
+                }
+                catch (Exception ex)
+                {
+                    ModelState.AddModelError("", $"{ex.Message}");
+                    return View(raceVM);
+                }
+                var photo = await _photoService.AddPhotoAsync(raceVM.Image);
+
+
+
+                var club = new Race
+                {
+                    Id = raceVM.Id,
+                    Title = raceVM.Title,
+                    Address = raceVM.Address,
+                    AddressId = raceVM.AddressId,
+                    RaceCategory = raceVM.RaceCategory,
+                    Image = photo.Url.ToString(),
+                    Description = raceVM.Description
+                };
+
+                _raceRepo.Update(club);
+
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(raceVM);
+            }
+        }
     }
 }
