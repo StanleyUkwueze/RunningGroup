@@ -5,6 +5,7 @@ using RaceClub.Repository.Interfaces;
 using RaceClub.Models;
 using RaceClub.ViewModel;
 using RaceClub.Services;
+using RaceClub.Helper;
 
 namespace RaceClub.Controllers
 {
@@ -13,12 +14,14 @@ namespace RaceClub.Controllers
 
         private readonly IClubRepo _clubRepo;
         private readonly IPhotoService _photoService;
+        private readonly IHttpContextAccessor _httpContext;
 
-        public ClubController(IClubRepo clubRepo, IPhotoService photoService)
+        public ClubController(IClubRepo clubRepo, IPhotoService photoService, IHttpContextAccessor httpContext)
         {
 
             _clubRepo = clubRepo;
             _photoService = photoService;
+            _httpContext = httpContext;
         }
         public async Task<IActionResult> Index()
         {
@@ -40,8 +43,12 @@ namespace RaceClub.Controllers
 
         public async Task<IActionResult> Create()
         {
-
-            return View();
+            var currentUser = _httpContext.HttpContext?.User.GetUserId();
+            var createClubVM = new CreateClubViewModel
+            {
+                AppUserId = currentUser
+            };
+            return View(createClubVM);
         }
 
         [HttpPost]
@@ -56,6 +63,7 @@ namespace RaceClub.Controllers
                     Title = clubVM.Title,
                     Image = result.Url.ToString(),
                     Description = clubVM.Description,
+                    AppUserId = clubVM.AppUserId,
                     Address = new Address
                     {
                         Street = clubVM.Address.Street,
@@ -140,6 +148,27 @@ namespace RaceClub.Controllers
             {
                 return View(clubVM);
             }
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var clubToDelete = await _clubRepo.GetByIdAsync(id);
+            if(clubToDelete == null) return View("Error");
+            else
+            {
+                return View(clubToDelete);
+            }
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteClub(int id)
+        {
+            var club = await _clubRepo.GetByIdAsync(id);
+            if(club == null) return View("Error");
+
+            _clubRepo.Delete(club);
+
+            return RedirectToAction("Index");
         }
     }
 }

@@ -1,9 +1,10 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using RaceClub.Models;
 
 namespace RaceClub.Data
 {
-    public class ApplicationDbContext:DbContext
+    public class ApplicationDbContext:IdentityDbContext<AppUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options):base(options)
         {
@@ -13,7 +14,7 @@ namespace RaceClub.Data
         public DbSet<Race> Races { get; set; }
         public DbSet<Club> Clubs { get; set; }
         public DbSet<Address> Addresses { get; set; }
-       // public DbSet<State> States { get; set; }
-        //public DbSet<City> Cities { get; set; }
+        public DbSet<State> States { get; set; }
+        public DbSet<City> Cities { get; set; }
     }
 }

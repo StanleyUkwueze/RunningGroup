@@ -1,6 +1,9 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RaceClub.Data;
 using RaceClub.Helper;
+using RaceClub.Models;
 using RaceClub.Repository.Implementation;
 using RaceClub.Repository.Interfaces;
 using RaceClub.Services;
@@ -15,14 +18,22 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IClubRepo, ClubRepo>();
 builder.Services.AddScoped<IRaceRepo, RaceRepo>();
+builder.Services.AddScoped<IDashboardRepo, DashboardRepo>();
+builder.Services.AddIdentity<AppUser, IdentityRole>()
+        .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();
 builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
+builder.Services.AddMemoryCache();
+builder.Services.AddSession();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+        .AddCookie();
+
 
 var app = builder.Build();
 
 //if (args.Length == 1 && args[0].ToLower() == "seeddata")
 //{
-//    await Seed.SeedUsersAndRolesAsync(app);
+   await Seed.SeedUsersAndRolesAsync(app);
 //    Seed.SeedData(app);
 //}
 
@@ -42,6 +53,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

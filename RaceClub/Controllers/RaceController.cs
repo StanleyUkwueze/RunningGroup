@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceClub.Data;
 using RaceClub.Models;
@@ -9,6 +10,7 @@ using RaceClub.ViewModel;
 
 namespace RaceClub.Controllers
 {
+   
     public class RaceController : Controller
     {
         private readonly IRaceRepo _raceRepo;
@@ -132,6 +134,27 @@ namespace RaceClub.Controllers
             {
                 return View(raceVM);
             }
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            var clubToDelete = await _raceRepo.GetByIdAsync(id);
+            if (clubToDelete == null) return View("Error");
+            else
+            {
+                return View(clubToDelete);
+            }
+        }
+
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteRace(int id)
+        {
+            var club = await _raceRepo.GetByIdAsync(id);
+            if (club == null) return View("Error");
+
+            _raceRepo.Delete(club);
+
+            return RedirectToAction("Index");
         }
     }
 }

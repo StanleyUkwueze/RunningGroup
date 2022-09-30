@@ -27,8 +27,15 @@
                             <p class="card-text">@club.Description</p>
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="btn-group">
-                                    <a asp-controller="club" asp-action="Detail" asp-route-id="@club.Id" type="button" class="btn btn-sm btn-outline-secondary">View</a>
-                                    <a asp-controller="club" asp-action="Edit" asp-route-id="@club.Id" type="button" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                    @if(User.Identity.IsAuthenticated && User.IsInRole("admin"))
+                                    {
+                                        <a asp-controller="club" asp-action="Detail" asp-route-id="@club.Id" type="button" class="btn btn-sm btn-outline-secondary">View</a>
+                                        <a asp-controller="club" asp-action="Edit" asp-route-id="@club.Id" type="button" class="btn btn-sm btn-outline-secondary">Edit</a>
+                                        <a asp-controller="club" asp-action="Delete" asp-route-id="@club.Id" type="button" class="btn btn-sm btn-outline-secondary">Delete</a>
+                                    }
+                                   else{
+                                        <a asp-controller="club" asp-action="Detail" asp-route-id="@club.Id" type="button" class="btn btn-sm btn-outline-secondary">View</a>
+                                   }
                                 </div>
                                 <small class="text-muted">@club.ClubCategory</small>
                             </div>
