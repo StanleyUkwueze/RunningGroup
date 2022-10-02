@@ -19,6 +19,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IClubRepo, ClubRepo>();
 builder.Services.AddScoped<IRaceRepo, RaceRepo>();
 builder.Services.AddScoped<IDashboardRepo, DashboardRepo>();
+builder.Services.AddScoped<IUserRepo, UserRepo>();
 builder.Services.AddIdentity<AppUser, IdentityRole>()
         .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddScoped<IPhotoService, PhotoService>();

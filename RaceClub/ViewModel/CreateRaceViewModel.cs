@@ -10,6 +10,7 @@ namespace RaceClub.ViewModel
         public string? Description { get; set; }
         public IFormFile Image { get; set; }
         public Address? Address { get; set; }
-        public ClubCategory ClubCategory { get; set; }
+        public RaceCategory RaceCategory { get; set; }
+        public string AppUserId { get; set; }
     }
 }

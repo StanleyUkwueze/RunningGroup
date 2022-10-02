@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceClub.Data;
+using RaceClub.Helper;
 using RaceClub.Models;
 using RaceClub.Repository.Implementation;
 using RaceClub.Repository.Interfaces;
@@ -15,11 +16,13 @@ namespace RaceClub.Controllers
     {
         private readonly IRaceRepo _raceRepo;
         private readonly IPhotoService _photoService;
+        private readonly IHttpContextAccessor _httpContext;
 
-        public RaceController(IRaceRepo raceRepo, IPhotoService photoService)
+        public RaceController(IRaceRepo raceRepo, IPhotoService photoService, IHttpContextAccessor httpContext)
         {
             _raceRepo = raceRepo;
             _photoService = photoService;
+            _httpContext = httpContext;
         }
         public async Task<IActionResult> Index()
         {
@@ -35,8 +38,13 @@ namespace RaceClub.Controllers
 
         public async Task<IActionResult> Create()
         {
+            var currentUser = _httpContext.HttpContext?.User.GetUserId();
+            var createRaceVM = new CreateRaceViewModel
+            {
+                AppUserId = currentUser
+            };
 
-            return View();
+            return View(createRaceVM);
         }
 
         [HttpPost]
@@ -51,6 +59,7 @@ namespace RaceClub.Controllers
                     Title = raceVM.Title,
                     Description = raceVM.Description,
                     Image = result.Url.ToString(),
+                    AppUserId = raceVM.AppUserId,
                     Address = new Address
                     {
                         Street = raceVM.Address.Street,
